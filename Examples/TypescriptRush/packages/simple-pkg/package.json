@@ -1,0 +1,13 @@
+{
+  "name": "simple-pkg",
+  "version": "1.0.0",
+  "description": "A simple Typescript package",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "mhac@microsoft.com",
+  "dependencies": {
+    "request": "^2.88.0",
+    "@types/request": "2.48.1"
+  }
+}

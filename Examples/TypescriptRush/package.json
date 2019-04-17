@@ -1,0 +1,13 @@
+{
+  "name": "typescript-rush",
+  "version": "1.0.0",
+  "description": "Tests for Rush and Typescript",
+  "scripts": {
+    "build": "rush build"
+  },
+  "author": "mhac@microsoft.com",
+  "dependencies": {
+    "@microsoft/rush": "^5.6.0",
+    "rush": "0.0.2"
+  }
+}
