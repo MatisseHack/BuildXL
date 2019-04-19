@@ -9,5 +9,8 @@
   "dependencies": {
     "request": "^2.88.0",
     "@types/request": "2.48.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.4.4"
   }
 }

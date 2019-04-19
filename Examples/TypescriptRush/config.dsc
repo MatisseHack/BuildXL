@@ -29,8 +29,8 @@ config({
   cacheableFileAccessWhitelist: [
     {
       name: "TempLockfiles",
-      toolPath: f`./Out/frontend/Download/NodeJs.osx-x64/c/node-v8.12.0-darwin-x64/bin/node`,
-      pathRegex: ".*rush#\\d\\d\\d\\d\\d\\.lock"
+      toolPath: f`./Out/frontend/Download/NodeJs.osx-x64/c/node-v10.15.3-darwin-x64/bin/node`,
+      pathRegex: ".*/rush#\\d+\\.lock"
     }
   ],
   resolvers: [
@@ -39,20 +39,35 @@ config({
       downloads: [
         {
           moduleName: "NodeJs.win-x64",
-          url: "https://nodejs.org/download/release/v8.12.0/node-v8.12.0-win-x64.zip",
-          hash: "VSO0:95276E5CC1A0F5095181114C16734E8E0416B222F232E257E31FEBF73324BC2300",
+          url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-win-x64.zip",
+          // hash: "VSO0:95276E5CC1A0F5095181114C16734E8E0416B222F232E257E31FEBF73324BC2300",
           archiveType: "zip",
         },
         {
           moduleName: "NodeJs.osx-x64",
-          url: "https://nodejs.org/download/release/v8.12.0/node-v8.12.0-darwin-x64.tar.gz",
-          hash: "VSO0:2D9315899B651CA8489F47580378C5C8EAE5E0DEB4F50AF5A149BEC7B387228000",
+          url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-darwin-x64.tar.gz",
+          // hash: "VSO0:2D9315899B651CA8489F47580378C5C8EAE5E0DEB4F50AF5A149BEC7B387228000",
+          archiveType: "tgz",
+        },
+        {
+          moduleName: "rush.osx",
+          url: "https://drive.google.com/uc?id=1ioJSnoLrsKmdY7fAY_mhr0pzK8Zf5qel&export=download",
+          archiveType: "tgz",
+        },
+        {
+          moduleName: "npm.osx",
+          url: "https://drive.google.com/uc?id=1QYpA6HgAnOrSwCcoJ7Z4tvYSaxV-I2Zr&export=download",
+          archiveType: "tgz",
+        },
+        {
+          moduleName: "git.osx",
+          url: "https://drive.google.com/uc?id=1hx9GqrHLBspCxm0MgyR30sWzGznqk-Qt&export=download",
           archiveType: "tgz",
         },
         {
           moduleName: "NodeJs.linux-x64",
-          url: "https://nodejs.org/download/release/v8.12.0/node-v8.12.0-linux-arm64.tar.gz",
-          hash: "VSO0:9DE138F52CCCE4B89747BFDEC5D3A0DDBB23BF80BB2A45AE0218D852845AB13C00",
+          url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-linux-arm64.tar.gz",
+          // hash: "VSO0:9DE138F52CCCE4B89747BFDEC5D3A0DDBB23BF80BB2A45AE0218D852845AB13C00",
           archiveType: "tgz",
         },
       ],

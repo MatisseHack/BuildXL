@@ -1,67 +1,72 @@
 import { Artifact, Cmd, Transformer } from 'Sdk.Transformers';
 
 namespace Rush {
-  const home = Context.getMount("UserProfile").path;
-  const gitDirPath = searchUp(Context.getMount("SourceRoot").path, a`.git`);
-  
-  const unsafe: Transformer.UnsafeExecuteArguments = {
-    untrackedScopes: [
-      d`/usr`,
-      d`/private`,
-      d`/dev`,
-      d`/etc`,
-      d`/Library`,
-      d`/System/Library`,
-      d`/var`,
-      d`/bin`,
-      d`/Applications/Xcode.app/Contents`,
-      d`${home}/.rush`,
-      d`${gitDirPath}`,
-    ],
-    untrackedPaths: [
-      f`${home}/.npmrc`,
-      f`${home}/.gitconfig`
-    ],
-    passThroughEnvironmentVariables: [
-      // TODO
-      "PATH",
-      "HOME"
-    ]
-  };
-  
   @@public
-  export function install(args: InstallArguments): Transformer.ExecuteResult {
-    const wd = Context.getNewOutputDirectory("rush-install");
-    return Npx.run({
-      description: "install",
-      packageName: "rush",
-      arguments: [
-        Cmd.argument("install")
-      ],
-      workingDirectory: wd,
-      dependencies: args.dependencies,
-      outputs: [
-        d`${wd}/.rush`,
-        ...args.outputs
-      ],
-      unsafe: { untrackedScopes: args.untrackedScopes, untrackedPaths: args.untrackedPaths }.merge(unsafe)
-    });
+  export function install(args: RushArguments): Transformer.ExecuteResult {
+    return run(["install"], args);
   }
   
   @@public
-  export function build(args: BuildArguments): Transformer.ExecuteResult {
-    const wd = Context.getNewOutputDirectory("rush-build");
-    return Npx.run({
-      description: args.target,
-      packageName: "rush",
+  export function build(args: RushBuildArguments): Transformer.ExecuteResult {
+    return run([ "build", "-t", args.target ], args);
+  }
+  
+  function run(cmdArgs: string[], rushArgs: RushArguments) {
+    const wd = Context.getNewOutputDirectory("rush-" + cmdArgs[0]);
+    const gitDirPath = searchUp(Context.getMount("SourceRoot").path, a`.git`);
+
+    const extractedNode : StaticDirectory = importFrom("NodeJs.osx-x64").extracted;
+    const extractedNpm : StaticDirectory = importFrom("npm.osx").extracted;
+    const extractedGit : StaticDirectory = importFrom("git.osx").extracted;
+    const extractedRush : StaticDirectory = importFrom("rush.osx").extracted;
+    const rushExec : File = extractedRush.getFile(r`rush/node_modules/@microsoft/rush/bin/rush`);
+    
+    const path = [
+      d`${extractedNode.path}/node-v10.15.3-darwin-x64/bin`,
+      d`${extractedNpm.path}/npm/node_modules/npm/bin`,
+      d`${extractedGit.path}/git`,
+      rushExec.parent,
+      d`/bin`,
+      d`/usr/bin`,
+    ].map(d => d.toDiagnosticString()).join(":");
+    
+    return Node.run({
       arguments: [
-        Cmd.args([ "build", "-t", args.target, ">", Artifact.output(p`${wd}/build-out.txt`) ])
+        Cmd.argument(Artifact.input(rushExec)),
+        Cmd.args(cmdArgs)
       ],
       workingDirectory: wd,
-      dependencies: args.dependencies,
-      outputs: args.outputs,
-      allowUndeclaredSourceReads: true, // rush calls git, which can read any modified file in the repo
-      unsafe: { untrackedScopes: args.untrackedScopes, untrackedPaths: args.untrackedPaths }.merge(unsafe)
+      dependencies: [
+        extractedNpm,
+        extractedGit,
+        extractedRush,
+        ...rushArgs.dependencies
+      ],
+      outputs: [
+        wd,
+        ...rushArgs.outputs
+      ],
+      environmentVariables: [
+        { name: "PATH", value: path },
+        { name: "HOME", value: wd.toDiagnosticString() },
+      ],
+      unsafe: {
+        untrackedScopes: [
+          d`/bin`,
+          d`/dev`,
+          d`/etc`,
+          d`/private`,
+          d`/System/Library`,
+          d`/usr`,
+          d`/var`,
+          d`${gitDirPath}`,
+          ...(rushArgs.untrackedScopes || [])
+        ],
+        untrackedPaths: [
+          f`${Context.getMount("UserProfile").path}/.CFUserTextEncoding`,
+          ...(rushArgs.untrackedPaths || [])
+        ]
+      }
     });
   }
   
@@ -75,18 +80,14 @@ namespace Rush {
     }
   }
   
-  interface InstallArguments extends Transformer.RunnerArguments {
+  interface RushArguments extends Transformer.RunnerArguments {
     dependencies: Transformer.InputArtifact[],
     outputs: Transformer.Output[],
     untrackedPaths?: (File | Directory)[],
     untrackedScopes?: Directory[]
   }
   
-  interface BuildArguments extends Transformer.RunnerArguments {
-    target: string,
-    dependencies: Transformer.InputArtifact[],
-    outputs: Transformer.Output[],
-    untrackedPaths?: (File | Directory)[],
-    untrackedScopes?: Directory[]
+  interface RushBuildArguments extends RushArguments {
+    target: string
   }
 }

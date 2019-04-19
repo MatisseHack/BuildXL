@@ -34,15 +34,15 @@ namespace Node {
     switch (host.os) {
       case "win":
       pkgContents = importFrom("NodeJs.win-x64").extracted;
-      executable = r`node-v8.12.0-win-x64/node.exe`;
+      executable = r`node-v10.15.3-win-x64/node.exe`;
       break;
       case "macOS": 
       pkgContents = importFrom("NodeJs.osx-x64").extracted;
-      executable = r`node-v8.12.0-darwin-x64/bin/node`;
+      executable = r`node-v10.15.3-darwin-x64/bin/node`;
       break;
       case "unix":
       pkgContents = importFrom("NodeJs.linux-x64").extracted;
-      executable = r`node-v8.12.0-linux-arm64/bin/node`;
+      executable = r`node-v10.15.3-linux-arm64/bin/node`;
       break;
       default:
       Contract.fail(`The current NodeJs package doesn't support the current OS: ${host.os}. Esure you run on a supported OS -or- update the NodeJs package to have the version embdded.`);
@@ -69,15 +69,15 @@ namespace Node {
     switch (host.os) {
       case "win":
       pkgContents = importFrom("NodeJs.win-x64").extracted;
-      executable = r`node-v8.12.0-win-x64/node_modules/npm/bin/npm-cli.js`;
+      executable = r`node-v10.15.3-win-x64/node_modules/npm/bin/npm-cli.js`;
       break;
       case "macOS": 
       pkgContents = importFrom("NodeJs.osx-x64").extracted;
-      executable = r`node-v8.12.0-darwin-x64/lib/node_modules/npm/bin/npm-cli.js`;
+      executable = r`node-v10.15.3-darwin-x64/lib/node_modules/npm/bin/npm-cli.js`;
       break;
       case "unix":
       pkgContents = importFrom("NodeJs.linux-x64").extracted;
-      executable = r`node-v8.12.0-linux-arm64/lib/node_modules/npm/bin/npm-cli.js`;
+      executable = r`node-v10.15.3-linux-arm64/lib/node_modules/npm/bin/npm-cli.js`;
       break;
       default:
       Contract.fail(`The current NodeJs package doesn't support the current OS: ${host.os}. Esure you run on a supported OS -or- update the NodeJs package to have the version embdded.`);

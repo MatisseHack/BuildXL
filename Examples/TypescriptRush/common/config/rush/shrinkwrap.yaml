@@ -2,6 +2,7 @@ dependencies:
   '@rush-temp/simple-pkg': 'file:projects/simple-pkg.tgz'
   '@types/request': 2.48.1
   request: 2.88.0
+  typescript: 3.4.4
 packages:
   /@types/caseless/0.12.2:
     dev: false
@@ -324,6 +325,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
+  /typescript/3.4.4:
+    dev: false
+    engines:
+      node: '>=4.2.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-xt5RsIRCEaf6+j9AyOBgvVuAec0i92rgCaS3S+UVf5Z/vF2Hvtsw08wtUTJqp4djwznoAgjSxeCcU4r+CcDBJA==
   /uri-js/4.2.2:
     dependencies:
       punycode: 2.1.1
@@ -349,10 +357,11 @@ packages:
     dependencies:
       '@types/request': 2.48.1
       request: 2.88.0
+      typescript: 3.4.4
     dev: false
     name: '@rush-temp/simple-pkg'
     resolution:
-      integrity: sha512-rAWujEgM2ntzQUNZ6eheWV//ZtPbpiUYSjyiHnX6aJkgEQhbNxSJmfT+MNCPImCXXpa5k2QQHscIjGuyxvaRZQ==
+      integrity: sha512-B3R+BDMtpo/9EBR8Kbk66cxE8CJ9bLy7rv894WrS1GeMGOWhU+ebxsMc9k22OJIBpR/uP2cE9+76d+YGqoQWJQ==
       tarball: 'file:projects/simple-pkg.tgz'
     version: 0.0.0
 registry: 'https://registry.npmjs.org/'
@@ -362,3 +371,4 @@ specifiers:
   '@rush-temp/simple-pkg': 'file:./projects/simple-pkg.tgz'
   '@types/request': 2.48.1
   request: ^2.88.0
+  typescript: ^3.4.4
