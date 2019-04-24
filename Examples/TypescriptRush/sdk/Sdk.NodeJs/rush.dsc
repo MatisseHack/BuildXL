@@ -14,21 +14,40 @@ namespace Rush {
   function run(cmdArgs: string[], rushArgs: RushArguments) {
     const wd = Context.getNewOutputDirectory("rush-" + cmdArgs[0]);
     const gitDirPath = searchUp(Context.getMount("SourceRoot").path, a`.git`);
-
-    const extractedNode : StaticDirectory = importFrom("NodeJs.osx-x64").extracted;
-    const extractedNpm : StaticDirectory = importFrom("npm.osx").extracted;
-    const extractedGit : StaticDirectory = importFrom("git.osx").extracted;
-    const extractedRush : StaticDirectory = importFrom("rush.osx").extracted;
-    const rushExec : File = extractedRush.getFile(r`rush/node_modules/@microsoft/rush/bin/rush`);
     
-    const path = [
-      d`${extractedNode.path}/node-v10.15.3-darwin-x64/bin`,
-      d`${extractedNpm.path}/npm/node_modules/npm/bin`,
-      d`${extractedGit.path}/git`,
-      rushExec.parent,
-      d`/bin`,
-      d`/usr/bin`,
-    ].map(d => d.toDiagnosticString()).join(":");
+    const extractedGit: StaticDirectory = importFrom("git").extracted;
+    const extractedRush: StaticDirectory = importFrom("rush").extracted;
+    const rushExec: File = extractedRush.getFile(r`rush/node_modules/@microsoft/rush/bin/rush`);
+    
+    let path: string = "";
+    let toolDependencies: StaticDirectory[] = [];
+    
+    if(Context.getCurrentHost().os === "win") {
+      const winNode: StaticDirectory = importFrom("NodeJs.win-x64").extracted;
+      
+      path = [
+        rushExec.parent,
+        d`${extractedGit.path}/git`,
+        d`${winNode.path}/node-v10.15.3-win-x64`,
+        d`${winNode.path}/node-v10.15.3-win-x64/node_modules/npm/bin`,
+      ].map(d => d.toDiagnosticString()).join(";");
+    } else {
+      const macNode: StaticDirectory = importFrom("NodeJs.osx-x64").extracted;
+      const macNpm: StaticDirectory = importFrom("npm.osx").extracted;
+      
+      path = [
+        rushExec.parent,
+        d`${extractedGit.path}/git`,
+        d`${macNode.path}/node-v10.15.3-darwin-x64/bin`,
+        d`${macNpm.path}/npm/node_modules/npm/bin`,
+        d`/bin`,
+        d`/usr/bin`,
+      ].map(d => d.toDiagnosticString()).join(":");
+      
+      toolDependencies = [
+        macNpm
+      ];
+    }
     
     return Node.run({
       arguments: [
@@ -37,9 +56,9 @@ namespace Rush {
       ],
       workingDirectory: wd,
       dependencies: [
-        extractedNpm,
         extractedGit,
         extractedRush,
+        ...toolDependencies,
         ...rushArgs.dependencies
       ],
       outputs: [
@@ -49,6 +68,8 @@ namespace Rush {
       environmentVariables: [
         { name: "PATH", value: path },
         { name: "HOME", value: wd.toDiagnosticString() },
+        { name: "APPDATA", value: wd.toDiagnosticString() },
+        { name: "USERPROFILE", value: wd.toDiagnosticString() },
       ],
       unsafe: {
         untrackedScopes: [
@@ -59,7 +80,7 @@ namespace Rush {
           d`/System/Library`,
           d`/usr`,
           d`/var`,
-          d`${gitDirPath}`,
+          ...( gitDirPath ? [ d`${gitDirPath}` ] : []),
           ...(rushArgs.untrackedScopes || [])
         ],
         untrackedPaths: [

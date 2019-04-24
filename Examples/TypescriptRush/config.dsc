@@ -50,8 +50,9 @@ config({
           archiveType: "tgz",
         },
         {
-          moduleName: "rush.osx",
-          url: "https://drive.google.com/uc?id=1ioJSnoLrsKmdY7fAY_mhr0pzK8Zf5qel&export=download",
+          moduleName: "NodeJs.linux-x64",
+          url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-linux-arm64.tar.gz",
+          // hash: "VSO0:9DE138F52CCCE4B89747BFDEC5D3A0DDBB23BF80BB2A45AE0218D852845AB13C00",
           archiveType: "tgz",
         },
         {
@@ -60,14 +61,13 @@ config({
           archiveType: "tgz",
         },
         {
-          moduleName: "git.osx",
-          url: "https://drive.google.com/uc?id=1hx9GqrHLBspCxm0MgyR30sWzGznqk-Qt&export=download",
+          moduleName: "rush",
+          url: "https://drive.google.com/uc?id=1ioJSnoLrsKmdY7fAY_mhr0pzK8Zf5qel&export=download",
           archiveType: "tgz",
         },
         {
-          moduleName: "NodeJs.linux-x64",
-          url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-linux-arm64.tar.gz",
-          // hash: "VSO0:9DE138F52CCCE4B89747BFDEC5D3A0DDBB23BF80BB2A45AE0218D852845AB13C00",
+          moduleName: "git",
+          url: "https://drive.google.com/uc?id=1hx9GqrHLBspCxm0MgyR30sWzGznqk-Qt&export=download",
           archiveType: "tgz",
         },
       ],
