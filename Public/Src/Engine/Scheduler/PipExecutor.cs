@@ -3617,6 +3617,15 @@ namespace BuildXL.Scheduler
                                 continue;
                             }
 
+                            if (!OperatingSystemHelper.IsUnixOS)
+                            {
+                                // TryProbePathExistence, with followSymlink: false, will say that a directory symlink or junction exists as a file.
+                                if (Directory.Exists(access.ToString(pathTable)))
+                                {
+                                    continue;
+                                }
+                            }
+
                             var fileArtifact = FileArtifact.CreateOutputFile(access);
                             fileList.Add(fileArtifact);
                             FileOutputData.UpdateFileData(allOutputData, fileArtifact.Path, OutputFlags.DynamicFile, index);

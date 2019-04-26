@@ -104,7 +104,7 @@ namespace BuildXL.Processes
 
 #if !PLATFORM_OSX
             // Make sure we allow for attribute writing first
-            var writeAttributesDenied = !FileUtilities.HasWritableAccessControl(expandedPath);
+            bool writeAttributesDenied = !FileUtilities.HasWritableAccessControl(expandedPath);
             if (writeAttributesDenied)
             {
                 FileUtilities.SetFileAccessControl(expandedPath, FileSystemRights.WriteAttributes | FileSystemRights.WriteExtendedAttributes, allow: true);

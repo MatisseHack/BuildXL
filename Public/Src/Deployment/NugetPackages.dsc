@@ -27,15 +27,6 @@ namespace NugetPackages {
         }).deployment,
     });
 
-    const net461 = pack({
-        id: `${packageNamePrefix}.net461`,
-        deployment: BuildXL.withQualifier({
-            configuration: qualifier.configuration,
-            targetFramework: "net461",
-            targetRuntime: "win-x64"
-        }).deployment,
-    });
-
     const winX64 = pack({
         id: `${packageNamePrefix}.win-x64`,
         deployment: BuildXL.withQualifier({
@@ -120,7 +111,6 @@ namespace NugetPackages {
         contents: [
             ...addIfLazy(Context.getCurrentHost().os === "win", () => [
                 net472,
-                net461,
                 winX64
             ]),
             osxX64,

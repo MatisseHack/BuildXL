@@ -40,7 +40,8 @@ config({
         {
           moduleName: "NodeJs.win-x64",
           url: "https://nodejs.org/download/release/v10.15.3/node-v10.15.3-win-x64.zip",
-          // hash: "VSO0:95276E5CC1A0F5095181114C16734E8E0416B222F232E257E31FEBF73324BC2300",
+          //hash: "VSO0:95276E5CC1A0F5095181114C16734E8E0416B222F232E257E31FEBF73324BC2300",
+          hash: "VSO0:434FC122916FAFB7424319B24A7D6B7CCAE23CF4E657E65C318D5DCCB28DD14500",
           archiveType: "zip",
         },
         {

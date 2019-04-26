@@ -12,8 +12,12 @@ namespace Download {
         references: [
             ...addIf(BuildXLSdk.isFullFramework,
                 NetFx.System.Net.Http.dll,
-                NetFx.System.Web.dll
+                NetFx.System.Web.dll,
+                NetFx.System.IO.Compression.FileSystem.dll,
+                NetFx.System.IO.Compression.dll,
+                NetFx.System.IO.Compression.ZipFile.dll
             ),
+            // ...(qualifier.targetFramework === "net472" ? [NetFx.System.IO.Compression.ZipFile.dll] : []),
             Core.dll,
             Script.dll,
             Sdk.dll,

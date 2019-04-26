@@ -270,6 +270,9 @@ export const NetFx = {
                 FileSystem: {
                     dll: createAssembly(r`System.IO.Compression.FileSystem.dll`),
                 },
+                ZipFile: {
+                    dll: undefined,
+                }
             },
             dll: createFacade(r`System.IO.dll`),
             Log: {

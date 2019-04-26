@@ -1488,6 +1488,7 @@ namespace BuildXL.Native.IO.Windows
             Contract.Requires(!string.IsNullOrWhiteSpace(path));
 
 #if !FEATURE_CORECLR
+            path = FileSystemWin.ToLongPathIfExceedMaxPath(path);
             FileSystemRights fileSystemRights =
                 FileSystemRights.WriteData |
                 FileSystemRights.AppendData |
@@ -1522,6 +1523,7 @@ namespace BuildXL.Native.IO.Windows
         public void SetFileAccessControl(string path, FileSystemRights fileSystemRights, bool allow)
         {
 #if !FEATURE_CORECLR
+            path = FileSystemWin.ToLongPathIfExceedMaxPath(path);
             var denyWriteRule = new FileSystemAccessRule(
                 FileUtilitiesWin.s_worldSid,
                 fileSystemRights,

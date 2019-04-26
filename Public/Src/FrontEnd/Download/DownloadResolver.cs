@@ -33,6 +33,7 @@ using static BuildXL.Utilities.FormattableStringEx;
 using System.ComponentModel;
 using System.Diagnostics;
 using BuildXL.FrontEnd.Sdk.Evaluation;
+using System.IO.Compression;
 
 namespace BuildXL.FrontEnd.Download
 {
@@ -563,16 +564,50 @@ namespace BuildXL.FrontEnd.Download
                 return false;
             }
 
+            string destinationPath = null;
+            string fullName = null;
+
             switch (downloadData.Settings.ArchiveType)
             {
                 case DownloadArchiveType.Zip:
                     try
                     {
-                        new FastZip().ExtractZip(archive, target, null);
+                        // System.IO.Compression.ZipFile.ExtractToDirectory(archive, target);
+                        //new FastZip().ExtractZip(archive, target, null);
+                        using (System.IO.Compression.ZipArchive zipArchive = System.IO.Compression.ZipFile.OpenRead(archive))
+                        {
+                            foreach (System.IO.Compression.ZipArchiveEntry entry in zipArchive.Entries)
+                            {
+                                if (entry.FullName.Length > 280)
+                                {
+                                    continue;
+                                }
+
+                                fullName = entry.FullName;
+
+                                // Gets the full path to ensure that relative segments are removed.
+                                destinationPath = Path.GetFullPath(Path.Combine(target, entry.FullName));
+
+                                // Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
+                                // are case-insensitive.
+                                if (destinationPath.StartsWith(target, StringComparison.Ordinal) 
+                                    && !destinationPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)
+                                    && destinationPath.Length < 260)
+                                {
+                                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                                    entry.ExtractToFile(destinationPath);
+                                }
+                            }
+                        }
                     }
                     catch (ZipException e)
                     {
                         m_logger.ErrorExtractingArchive(m_context.LoggingContext, downloadData.Settings.ModuleName, archive, target, e.Message);
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        m_logger.ErrorExtractingArchive(m_context.LoggingContext, downloadData.Settings.ModuleName, archive, target + " -- " + (destinationPath ?? string.Empty) + " -- " + (fullName ?? string.Empty) , ex.ToString());
                         return false;
                     }
 
