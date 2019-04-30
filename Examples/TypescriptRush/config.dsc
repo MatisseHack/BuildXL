@@ -1,9 +1,12 @@
 config({
+  // Pulls in the main module.config.dsc and the modules in the sdk folder
   modules: [
     f`./module.config.dsc`,
     f`./sdk/Sdk.Transformers/package.config.dsc`,
     ...globR(d`./sdk`, "module.config.dsc")
   ],
+  // Configuration that allows access to the folders needed by the build
+  // You will get errors about "unable to hash files" if trackSourceFileChanges is false
   mounts: [
     // rush calls git, which can read any modified file in the repo so we need `allowUndeclaredSourceReads: true` for now
     {
@@ -26,6 +29,7 @@ config({
       trackSourceFileChanges: true
     }
   ],
+  // Used to ignore double writes to rush's lockfiles. Currently not working, but not sure why.
   cacheableFileAccessWhitelist: [
     {
       name: "TempLockfiles",
@@ -35,6 +39,8 @@ config({
   ],
   resolvers: [
     {
+      // Dependencies for the build script. In this case we need to download Node.js in order to run rush.
+      // Not sure how to generate the VSO0 hashes
       kind: "Download",
       downloads: [
         {
