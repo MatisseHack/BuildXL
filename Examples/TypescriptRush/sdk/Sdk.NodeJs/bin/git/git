@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ "$1" = "remote" ] && [ "$2" = "get-url" ] ; then
+    /usr/bin/git "$@"
+fi

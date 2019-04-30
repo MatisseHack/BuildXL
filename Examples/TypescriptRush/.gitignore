@@ -1,5 +1,9 @@
+.DS_Store
 common/temp/
 Out/
 node_modules/
 lib/
 package-deps.json
+
+!/sdk/Sdk.NodeJs/bin/
+!/sdk/Sdk.NodeJs/bin/**
