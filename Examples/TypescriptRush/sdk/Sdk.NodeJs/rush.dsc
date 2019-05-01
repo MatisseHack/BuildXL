@@ -33,27 +33,26 @@ namespace Rush {
     // Search for the .git folder and get it's path
     const gitDirPath = searchUp(Context.getMount("SourceRoot").path, a`.git`);
     
-    // Get the directories for the downloaded git and rush tools
-    const extractedGit: StaticDirectory = importFrom("git").extracted;
-    const extractedRush: StaticDirectory = importFrom("rush").extracted;
-    // Find the rush executable using a relative path
-    const rushExec: File = extractedRush.getFile(r`rush/node_modules/@microsoft/rush/bin/rush`);
+    // Get paths to required tools
+    const gitDir = d`./bin/git`;
+    const rushDir = d`./bin/rush`;
+    const rushTool = f`${rushDir}/node_modules/.bin/rush`;
     
     // Variables require initializers in DScript
     let path: string = "";
-    let toolDependencies: StaticDirectory[] = [];
+    let otherToolDependencies: File[] = [];
     
     // Set the path differently if on Windows vs Mac
     if(Context.getCurrentHost().os === "win") {
       // Use the downloaded Windows version of Node
       const winNode: StaticDirectory = importFrom("NodeJs.win-x64").extracted;
       
-      // Add rush, git, node, and npm to the PATH
+      // Add node, npm, rush, and git to the PATH
       path = [
-        rushExec.parent,
-        d`${extractedGit.path}/git`,
         d`${winNode.path}/node-v10.15.3-win-x64`,
         d`${winNode.path}/node-v10.15.3-win-x64/node_modules/npm/bin`,
+        rushTool.parent,
+        gitDir,
       ].map(d => d.toDiagnosticString()).join(";"); // Uses toDiagnosticString, which is not recommended, but unavoidable. Also notice Windows separator ";"
     } else {
       // Use the downloaded Mac version of Node
@@ -61,37 +60,38 @@ namespace Rush {
       // Node includes npm, but the executables don't work on a mac without symlinking
       // (it is meant for Windows so Macs need to use the "npm-cli.js" file instead).
       // To get around this we have built a custom version of npm for Mac
-      const macNpm: StaticDirectory = importFrom("npm.osx").extracted;
+      // This would also be solved if BuildXL kept symlinks when extracting
+      const macNpmDir = d`./bin/npm`;
+      const macNpmTool = f`${macNpmDir}/node_modules/.bin/npm`;
       
-      // Add rush, git, node, and npm to the PATH along with /bin and /usr/bin
+      // Add node, npm, rush, and git to the PATH along with /bin and /usr/bin
       path = [
-        rushExec.parent,
-        d`${extractedGit.path}/git`,
         d`${macNode.path}/node-v10.15.3-darwin-x64/bin`,
-        d`${macNpm.path}/npm/node_modules/npm/bin`,
+        macNpmTool.parent,
+        rushTool.parent,
+        gitDir,
         d`/bin`,
         d`/usr/bin`,
       ].map(d => d.toDiagnosticString()).join(":"); // Uses toDiagnosticString, which is not recommended, but unavoidable. Also notice unix separator ":"
       
-      // Also add our custom Mac version of npm to toolDependencies so that this directory can be included as input
-      toolDependencies = [
-        macNpm
-      ];
+      // Also add our custom Mac version of npm to otherToolDependencies so that these files can be included as input
+      otherToolDependencies = globR(macNpmDir);
     }
     
     return Node.run({
       arguments: [
         // Pass in the rush executable and mark it as an input so that it can be read from
-        Cmd.argument(Artifact.input(rushExec)),
+        Cmd.argument(Artifact.input(rushTool)),
         // The other arguments to be passed to rush
         Cmd.args(cmdArgs)
       ],
       workingDirectory: wd,
       dependencies: [
-        // Add extracted tool directories as inputs
-        extractedGit,
-        extractedRush,
-        ...toolDependencies,
+        // Add tool directories as inputs
+        // Globing all the files is not ideal, but only Files and StaticDirectories are allowed
+        ...globR(gitDir),
+        ...globR(rushDir),
+        ...otherToolDependencies,
         // Add the dependencies passed in by the caller
         ...rushArgs.dependencies
       ],
